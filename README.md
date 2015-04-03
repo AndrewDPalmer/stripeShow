@@ -10,6 +10,22 @@ I put static sites on Heroku when I will be adding some simple dynamic stuff lat
 or for redundancy with GH pages (whose uptime isn't perfect).
 
 
+
+Thanks To
+--------
+I've heavily modified this to become a goofy website for my roommates birthday.  
+
+Thanks to 
+https://github.com/jamiew/heroku-static-site
+
+and extra Thanks to 
+http://www.goodboydigital.com/pixi-js-tutorial-getting-started/ - I borrowed his bunny and started with his demo but I don't think anything remains other than the bunny!!
+
+
+
+
+
+
 Usage
 -----
 
