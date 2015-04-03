@@ -1,40 +1,344 @@
+<!DOCTYPE HTML>
 <html>
 <head>
-  <title>heroku-static-site -- basic HTML+CSS+JS website on Heroku</title>
-  <link rel="stylesheet" href="css/screen.css" type="text/css" media="screen" charset="utf-8" />
-  <script src="js/application.js" type="text/javascript" charset="utf-8"></script>
+  <title>pixi.js example 1</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000000;
+    }
+  </style>
+  <script src="js/pixi.js"></script>
 
 </head>
 <body>
+  <script>
 
-<div id="container">
-  <div id="header">
-    <h1><a href="/">heroku-static-site</a></h1>
+  //Configuration for overall behavior
+  var screenWidth = 1920
+  var screenHeight = 1080
+  var stripeCount = 20;
+  var bunnyCount = 50;
+  var foxyCount = 50;
+  var maxBunnySize = 6;
+  var resetTime = 30000
 
-    <div id="navigation">
-      <ul>
-        <li><a href=""></a></li>
-        <li><a href=""></a></li>
-        <li><a href=""></a></li>
-      </ul>
-    </div>
-  </div>
+  //shitty global dataStores
+  var stripeSpeed = -2;
+  var stripeMaxRotation = 1;
+  var doStripesHorizontal = getRandomInt(0, 2);
+  var stripeLeftOrRight = 0;
+  var doStripesWiggle = getRandomInt(0, 5);
+  var doStripesVertical = getRandomInt(0, 2);
+  var stripeRotationIncrement = .5;
+  var stripeRotationSpeed = 1;
+  var stripeMaxRotation = 1;
+  var stripeRotationDirection = 0;
 
-
-  <div id="main">
-
-    <div id="description">
-      <h2>What's the idea?</h2>
-      <p>Yep</p>
-    </div>
-  </div>
-
-  <div id="footer">
-    &copy; 2013 No Rights Reserved.
-
-  </div>
-</div>
+  //setting the page to reload after 30 seconds...
+  setTimeout(function(){
+   window.location.reload(1);
+  }, resetTime);
 
 
-</body>
+  // create an new instance of a pixi stage
+  var stage = new PIXI.Stage(0xFFFFFF);
+  
+  // create a renderer instance
+  var renderer = PIXI.autoDetectRenderer(screenWidth, screenHeight, document.getElementById("maincanvas"));
+  renderer.view.style.width = '100%';
+  renderer.view.style.height = '100%';
+  
+  // add the renderer view element to the DOM
+  document.body.appendChild(renderer.view);
+
+  //application data
+  var scenes = [];
+  var bunnies = [];
+  var psychFoxies = [];
+  var stripes = [];
+
+  
+  //initialize our scenes
+  setUpScenes()
+
+  //begin our game loop
+  requestAnimFrame( animate );
+
+
+
+
+  function animate() {
+
+    animateSpinningBunnies();
+    animatePsychFoxys();
+    animateStripes();
+  
+    renderer.render(stage);
+    requestAnimFrame( animate );
+  }
+
+
+
+
+
+  function setUpScenes()
+  {
+    scenes.push(psychadelicFoxes());
+    scenes.push(bunniesInSpace());
+    scenes.push(stripeShow());
+
+    var whichScene = getRandomInt(0, 100)
+
+    if(whichScene < 10)
+    {
+      stage.addChild(scenes[0]);
+      console.log ('adding scene: ' +  0)
+    }
+    else if(whichScene < 50)
+    {
+      stage.addChild(scenes[1]);  
+      console.log ('adding scene: ' +  1)
+    }
+    else
+    {
+      stage.addChild(scenes[2]);
+      console.log ('adding scene: ' +  2)
+    }
+  }
+
+  function bunniesInSpace()
+  {
+    var container = new PIXI.DisplayObjectContainer();
+    container.addChild(backGroundSpace());
+
+    for (i = 0; i < bunnyCount; i++)
+    {
+      console.log("Adding bunny: " + i)
+      // create a texture from an image path      
+      var texture = PIXI.Texture.fromImage("images/sprites/bunny.png");
+      // create a new Sprite using the texture
+      var bunny = new PIXI.Sprite(texture);
+      
+      // center the sprites anchor point
+      bunny.anchor.x = 0.5;
+      bunny.anchor.y = 0.5;
+
+      //set rotation
+      bunny.rotationIncrement = Math.random() / 10;
+      bunny.direction = Math.random() * Math.PI * 2;
+      bunny.turningSpeed = Math.random() - 0.8;
+      var scale = (Math.random() * maxBunnySize) + .75;
+      bunny.scale.x = scale;
+      bunny.scale.y = scale;
+      
+      // move the sprite t the center of the screen
+      bunny.position.x = Math.random() * screenWidth;
+      bunny.position.y = Math.random() * screenHeight;
+      
+      container.addChild(bunny);
+      bunnies.push(bunny)
+      console.log("Bunny " + i + " added")
+    }
+
+    //container.animationAction = animateSpinningBunnies;
+    return container;
+
+  }
+
+  function psychadelicFoxes()
+  {
+    var container = new PIXI.DisplayObjectContainer();
+    container.addChild(backGroundColor());
+
+    for (i = 0; i < foxyCount; i++)
+    {
+      console.log("Adding psychFox: " + i)
+      // create a texture from an image path      
+      var texture = PIXI.Texture.fromImage("images/sprites/foxy.png");
+      // create a new Sprite using the texture
+      var psychFox = new PIXI.Sprite(texture);
+      
+      // center the sprites anchor point
+      psychFox.anchor.x = 0.5;
+      psychFox.anchor.y = 0.5;
+
+      //set rotation
+      psychFox.rotationIncrement = Math.random() / 25;
+      psychFox.direction = Math.random() * Math.PI * 2;
+      psychFox.turningSpeed = Math.random() - 0.8;
+      var scale = (Math.random() * 4) + .75;
+      psychFox.scale.x = scale;
+      psychFox.scale.y = scale;
+      
+      // move the sprite t the center of the screen
+      psychFox.position.x = Math.random() * screenWidth;
+      psychFox.position.y = Math.random() * screenHeight;
+      
+      container.addChild(psychFox);
+      psychFoxies.push(psychFox)
+      console.log("psychFox " + i + " added")
+    }
+
+    //container.animationAction = animateSpinningBunnies;
+    return container;
+
+  }
+
+  function stripeShow()
+  {
+    doStripesHorizontal = getRandomInt(0, 2);
+    doStripesVertical = getRandomInt(0, 2);
+    doStripesWiggle = getRandomInt(0, 2);
+
+    stripeLeftOrRight = getRandomInt(0, 2);
+    if(stripeLeftOrRight == 0)
+    {
+      stripeSpeed = Math.abs(stripeSpeed);
+    }
+    stripeSpeed = Math.random() * stripeSpeed + .5;
+    stripeRotationIncrement = Math.random() /2;
+
+    var container = new PIXI.DisplayObjectContainer();
+    container.addChild(backGroundColor());
+
+    for (i = 0; i < stripeCount; i++)
+    {
+      console.log("Adding Stripe: " + i)
+      // create a texture from an image path      
+      var colorRangeTop = getRandomInt(0, 10);
+      var colorRangeBottom = getRandomInt(0, 10);
+      var texture = PIXI.Texture.fromImage("images/colors/" + getRandomInt(colorRangeTop, colorRangeBottom) + ".png");
+      // create a new Sprite using the texture
+      var stripe = new PIXI.Sprite(texture);
+      
+      // center the sprites anchor point
+      stripe.anchor.x = 0.5;
+      stripe.anchor.y = 0.5;
+
+      //set rotation
+      stripe.rotation += stripeRotationIncrement;
+      stripe.direction = getRandomInt(0, 1);
+      var scale = (Math.random() * 1.5) + .75;
+      if(doStripesHorizontal == 0)
+      {
+        stripe.scale.x = 80;
+        stripe.scale.y = scale;
+      }
+      else
+      {
+        stripe.scale.x = scale;
+        stripe.scale.y = 80;
+      }
+        
+      
+      // move the sprite t the center of the screen
+      stripe.position.x = Math.random() * screenWidth;
+      stripe.position.y = Math.random() * screenHeight;
+      
+      container.addChild(stripe);
+      stripes.push(stripe)
+      console.log("Stripe " + i + " added")
+    }
+
+    //container.animationAction = animateSpinningBunnies;
+    return container;
+  }
+
+
+  function animateSpinningBunnies()
+  {
+    for (var i = 0; i < bunnies.length; i++) 
+    {
+      bunnies[i].rotation += bunnies[i].rotationIncrement;
+    }
+  }
+
+  function animatePsychFoxys()
+  {
+    for (var i = 0; i < psychFoxies.length; i++) 
+    {
+      psychFoxies[i].rotation += psychFoxies[i].rotationIncrement;
+    }
+  }
+
+  function animateStripes()
+  {
+    for (var i = 0; i < stripes.length; i++) 
+    {
+      if(doStripesHorizontal == 0)
+      {
+        stripes[i].position.x += stripeSpeed * 5;
+        if (stripes[i].position.x > screenWidth)
+        {
+          stripes[i].position.x = 0;
+        }
+        else if (stripes[i].position.x < 0)
+        {
+          stripes[i].position.x = screenWidth;
+        }
+      }
+      else if(doStripesVertical == 0)
+      {
+        stripes[i].position.y += stripeSpeed * 5;
+        if (stripes[i].position.y > screenHeight)
+        {
+          stripes[i].position.y = 0;
+        }
+        else if (stripes[i].position.y < 0)
+        {
+          stripes[i].position.y = screenHeight;
+        }
+      }
+
+      if (doStripesWiggle == 1)
+      {
+          stripes[i].rotation += stripeRotationSpeed / 100;
+      }
+        
+    }
+  }
+
+
+  function backGroundColor()
+  {
+    // create a background texture
+    var bgPath = "images/colors/" + getRandomInt(1, 10) + ".png"
+    var spaceFloorTexture = PIXI.Texture.fromImage(bgPath);
+    console.log(bgPath)
+    // create a new background sprite
+    var spaceFloorSprite = new PIXI.Sprite(spaceFloorTexture);
+    spaceFloorSprite.scale.x = 40;
+    spaceFloorSprite.scale.y = 40;
+    spaceFloorSprite.anchor.x = 0.5;
+    spaceFloorSprite.anchor.y = 0.5;
+    spaceFloorSprite.position.x = screenWidth / 2;
+    spaceFloorSprite.position.x = screenHeight / 2;
+    return spaceFloorSprite;
+  }
+
+  function backGroundSpace()
+  {
+    // create a background texture
+    var bgPath = "images/space" + getRandomInt(1, 6) + ".png"
+    var spaceFloorTexture = PIXI.Texture.fromImage(bgPath);
+    console.log(bgPath)
+    // create a new background sprite
+    var spaceFloorSprite = new PIXI.Sprite(spaceFloorTexture);
+    return spaceFloorSprite;
+  }
+
+
+
+
+  function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
+
+
+
+  </script>
+
+  </body>
 </html>
